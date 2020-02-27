@@ -1,4 +1,4 @@
-#include "miio.h"
+#include "ESPMiio.h"
 
 #include <Arduino.h>
 #include "crypto_utils.h"

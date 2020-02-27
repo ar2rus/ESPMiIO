@@ -1,5 +1,5 @@
-#ifndef miio_h
-#define miio_h
+#ifndef ESPMiio_h
+#define ESPMiio_h
 
 #include <Ticker.h>
 #include <ArduinoJson.h>
