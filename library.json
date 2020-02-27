@@ -1,0 +1,17 @@
+{
+  "name": "ESPMiIO",
+  "description": "ESP8266 Arduino implementation for the miIO protocol",
+  "keywords": "espmiio,miio,vacuum,esp8266,arduino,mesaage,device,command,hello",
+  "authors":
+  {
+    "name": "Arthur Nikiforov",
+    "maintainer": true
+  },
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/ar2rus/ESPMiIO.git"
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif"
+}

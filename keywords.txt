@@ -1,0 +1,51 @@
+#######################################
+# Syntax Coloring Map For Ultrasound
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ESPMiIO	KEYWORD1
+miIO	KEYWORD1
+mi	KEYWORD1
+MiioDevice	KEYWORD1
+MiioToken	KEYWORD1
+MiioCommand	KEYWORD1
+MiioMessage	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+getToken	KEYWORD2
+encrypt	KEYWORD2
+decrypt	KEYWORD2
+isHello	KEYWORD2
+getPayloadID	KEYWORD2
+getDeviceID	KEYWORD2
+getTimeStamp	KEYWORD2
+testMessage	KEYWORD2
+create	KEYWORD2
+isValid	KEYWORD2
+getResult	KEYWORD2
+getError	KEYWORD2
+connect	KEYWORD2
+send	KEYWORD2
+disconnect	KEYWORD2
+isConnected	KEYWORD2
+isBusy	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+MIIO_NOT_CONNECTED	LITERAL1
+MIIO_TIMEOUT	LITERAL1
+MIIO_BUSY	LITERAL1
+MIIO_INVALID_RESPONSE	LITERAL1
+MIIO_MESSAGE_CREATING	LITERAL1
+HELLO_UNKNOWN	LITERAL1
+HELLO_DEVICE_ID	LITERAL1
+HELLO_TIME_STAMP	LITERAL1
+NORMAL_UNKNOWN	LITERAL1

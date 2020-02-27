@@ -1,0 +1,25 @@
+#ifndef vacuum_h
+#define vacuum_h
+
+enum VacuumState{
+  VS_UNKNOWN = 0,
+  VS_STARTUP = 1,
+  VS_CHARGER_CONNECTION_LOST = 2,
+  VS_IDLE = 3,
+  VS_REMOTE_CONTROL = 4,
+  VS_CLEANING = 5,
+  VS_GOING_HOME = 6,
+  VS_MANUAL = 7,
+  VS_CHARGING = 8,
+  VS_CHARGING_ERROR = 9,
+  VS_PAUSED = 10,
+  VS_SPOT_CLEANUP = 11,
+  VS_ERROR = 12,
+  VS_SHUTDOWN = 13,
+  VS_UPDATING = 14,
+  VS_DOCKING = 15,
+  VS_GOING_TO_TARGET = 16,
+  VS_CLEANING_ZONE = 17
+};
+
+#endif
