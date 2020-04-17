@@ -161,10 +161,12 @@ MiioCommand::MiioCommand(): MiioMessage(HELLO_UNKNOWN, HELLO_DEVICE_ID, HELLO_TI
   this->method = "";
 }
 
-MiioCommand::MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payloadID, std::string method/*params*/) :
+MiioCommand::MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payloadID, std::string method, std::string params) :
   MiioMessage(NORMAL_UNKNOWN, deviceID, timeStamp, payloadID){
   this->method = method;
+  this->params = params;
 }
+
 
 MiioCommand::~MiioCommand(){
 }
@@ -174,16 +176,28 @@ char* MiioCommand::create(MiioToken* token, size_t &size){
     return MiioMessage::create("", token, size);
   }
 
-  DynamicJsonDocument doc(128);
+  DynamicJsonDocument doc(150);
   doc["id"] = MiioMessage::getPayloadID();
   if (method.empty()) return NULL;
   doc["method"] = method.c_str();
-  JsonArray params_doc = doc.createNestedArray("params");
-  //  if (params != null){
-  //  }
+  StaticJsonDocument<50> params_doc;
+  deserializeJson(params_doc, params);
+  if (params_doc.is<JsonArray>()) {
+    doc["params"] = params_doc.as<JsonArray>();
+  } else {
+    doc.createNestedArray("params").add(params_doc.as<JsonVariant>());
+  }
+//  int param = atoi(params.c_str());
+//  if (param == 0) {
+//    params_doc.add(params.c_str());
+//  } else {
+//    params_doc.add(param);
+//  }
+//  }
 
-  char json[128];
-  size_t json_size = serializeJson(doc, json, 128);
+  char json[150];
+  size_t json_size = serializeJson(doc, json, 150);
+//  Serial.println(json);
   
   return MiioMessage::create(std::string(json, json_size), token, size);
 }
@@ -193,8 +207,6 @@ MiioResponse::MiioResponse(char* message, size_t message_len, MiioToken* token):
     size_t payload_len = message_len - 0x20;
     decrypted_payload = new char[payload_len];
     size_t len = token->decrypt(&message[0x20], payload_len, decrypted_payload);
-    //Serial.println(decrypted_payload);
-    
     if (len){
       DynamicJsonDocument doc(512);
       DeserializationError error = deserializeJson(doc, decrypted_payload, len);
@@ -205,9 +217,9 @@ MiioResponse::MiioResponse(char* message, size_t message_len, MiioToken* token):
         JsonVariant r = doc["result"];
         if (!r.isNull()){
           if (r.is<JsonArray>()){
-            r = r[0].as<JsonObject>();
+            r = r[0];
           }
-          this->result = r.as<JsonObject>();
+          this->result = r;
         }else{
           this->error = doc["error"].as<JsonObject>();
         }
@@ -367,7 +379,7 @@ void MiioDevice::send_rcv(AsyncUDPPacket packet, MiioResponseHandlerFunction cal
   }
 }
 
-bool MiioDevice::send(std::string method/*, params*/, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error){
+bool MiioDevice::send(std::string method, std::string params, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error){
   if (!isConnected()){
     if (error){ error(MIIO_NOT_CONNECTED); }
     return false;
@@ -382,7 +394,7 @@ bool MiioDevice::send(std::string method/*, params*/, MiioResponseHandlerFunctio
     payloadID = 0;
   }
   
-  MiioCommand command(deviceID, ++timeStamp, ++payloadID, method);
+  MiioCommand command(deviceID, ++timeStamp, ++payloadID, method, params);
   size_t size;
   char* msg = command.create(token, size);
   if (msg){

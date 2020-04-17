@@ -66,10 +66,10 @@ class MiioMessage{
 class MiioCommand: public MiioMessage{
   private:
     std::string method;
-    //params
+    std::string params;
   public:
     MiioCommand();
-    MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payloadID, std::string method/*params*/);
+    MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payloadID, std::string method, std::string params);
     virtual ~MiioCommand();
 
     char* create(MiioToken* token, size_t &size);
@@ -78,14 +78,14 @@ class MiioCommand: public MiioMessage{
 class MiioResponse: public MiioMessage{
   private:
     char* decrypted_payload;
-    JsonObject result;
+    JsonVariant result;
     JsonObject error;
   public:
     MiioResponse(char* message, size_t message_len, MiioToken* token);
     virtual ~MiioResponse();
 
     bool isValid();
-    JsonObject getResult(){ return result; };
+    JsonVariant getResult(){ return result; };
     JsonObject getError(){ return error; };
 };
 
@@ -119,7 +119,7 @@ class MiioDevice {
     virtual ~MiioDevice();
 
     bool connect(MiioErrorHandlerFunction error = NULL);  //hello
-    bool send(std::string method/*, params*/, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error = NULL);
+    bool send(std::string method, std::string params, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error = NULL);
     void disconnect();
 
     bool isConnected();
