@@ -167,7 +167,6 @@ MiioCommand::MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payload
   this->params = serializedJsonParams;
 }
 
-
 MiioCommand::~MiioCommand(){
 }
 
@@ -191,13 +190,6 @@ char* MiioCommand::create(MiioToken* token, size_t &size){
       doc.createNestedArray("params").add(params_doc.as<JsonVariant>());
     }
   }
-//  int param = atoi(params.c_str());
-//  if (param == 0) {
-//    params_doc.add(params.c_str());
-//  } else {
-//    params_doc.add(param);
-//  }
-//  }
 
   char json[150];
   size_t json_size = serializeJson(doc, json, 150);
@@ -292,7 +284,7 @@ bool MiioDevice::udp_send(char* message, size_t size, IPAddress *ip, AuPacketHan
   }
 
   if (sent){
-    ticker.once_ms_scheduled(timeout, std::bind(&MiioDevice::udp_timeout, this, error));
+    ticker.once_ms(timeout, std::bind(&MiioDevice::udp_timeout, this, error));
     socket.onPacket(std::bind(&MiioDevice::udp_rcv, this, std::placeholders::_1, cb));
   }
   return sent;
