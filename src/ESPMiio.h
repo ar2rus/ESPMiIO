@@ -119,7 +119,8 @@ class MiioDevice {
     virtual ~MiioDevice();
 
     bool connect(MiioErrorHandlerFunction error = NULL);  //hello
-    bool send(std::string method, std::string params, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error = NULL);
+    bool send(std::string method, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error = NULL);
+    bool send(std::string method, std::string serializedJsonParams, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error = NULL);
     void disconnect();
 
     bool isConnected();

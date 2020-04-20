@@ -161,10 +161,10 @@ MiioCommand::MiioCommand(): MiioMessage(HELLO_UNKNOWN, HELLO_DEVICE_ID, HELLO_TI
   this->method = "";
 }
 
-MiioCommand::MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payloadID, std::string method, std::string params) :
+MiioCommand::MiioCommand(uint32_t deviceID, uint32_t timeStamp, uint16_t payloadID, std::string method, std::string serializedJsonParams) :
   MiioMessage(NORMAL_UNKNOWN, deviceID, timeStamp, payloadID){
   this->method = method;
-  this->params = params;
+  this->params = serializedJsonParams;
 }
 
 
@@ -180,12 +180,16 @@ char* MiioCommand::create(MiioToken* token, size_t &size){
   doc["id"] = MiioMessage::getPayloadID();
   if (method.empty()) return NULL;
   doc["method"] = method.c_str();
-  StaticJsonDocument<50> params_doc;
-  deserializeJson(params_doc, params);
-  if (params_doc.is<JsonArray>()) {
-    doc["params"] = params_doc.as<JsonArray>();
+  if (params == "") {
+      doc.createNestedArray("params");
   } else {
-    doc.createNestedArray("params").add(params_doc.as<JsonVariant>());
+    StaticJsonDocument<50> params_doc;
+    deserializeJson(params_doc, params);
+    if (params_doc.is<JsonArray>()) {
+      doc["params"] = params_doc.as<JsonArray>();
+    } else {
+      doc.createNestedArray("params").add(params_doc.as<JsonVariant>());
+    }
   }
 //  int param = atoi(params.c_str());
 //  if (param == 0) {
@@ -379,7 +383,11 @@ void MiioDevice::send_rcv(AsyncUDPPacket packet, MiioResponseHandlerFunction cal
   }
 }
 
-bool MiioDevice::send(std::string method, std::string params, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error){
+bool MiioDevice::send(std::string method, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error){
+  return send(method, "", callback, error);
+}
+
+bool MiioDevice::send(std::string method, std::string serializedJsonParams, MiioResponseHandlerFunction callback, MiioErrorHandlerFunction error){
   if (!isConnected()){
     if (error){ error(MIIO_NOT_CONNECTED); }
     return false;
@@ -394,7 +402,7 @@ bool MiioDevice::send(std::string method, std::string params, MiioResponseHandle
     payloadID = 0;
   }
   
-  MiioCommand command(deviceID, ++timeStamp, ++payloadID, method, params);
+  MiioCommand command(deviceID, ++timeStamp, ++payloadID, method, serializedJsonParams);
   size_t size;
   char* msg = command.create(token, size);
   if (msg){
